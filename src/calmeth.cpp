@@ -166,6 +166,11 @@ FILE* LOC_OUT_CHH;
 int coverage=5;
 int binspan=50000;
 int nCs=5;
+bool printwigfile = false;
+//C coverage
+unsigned long totalC = 0;
+unsigned long totalG = 0;
+unsigned long CoverC[16]={0};
 //
 unsigned long M=0,Mh=0,H_AllC=0,hU=0,U=0;
 unsigned long M_CG=0,Mh_CG=0,H_CG=0,hU_CG=0,U_CG=0;
@@ -314,6 +319,10 @@ int main(int argc, char* argv[])
                 mCdensity=Prefix;  
                 mCdensity+=".mCdensity.txt";
 
+                string NCcoverage;
+                NCcoverage=Prefix;
+                NCcoverage+=".NCcoverage.txt";
+
 		string mCcatero;
                 mCcatero=Prefix;
                 mCcatero+=".mCcatero.txt";
@@ -408,7 +417,7 @@ int main(int argc, char* argv[])
 				methOutfileName=Prefix;methOutfileName+=".methratio.txt";
 				METHOUTFILE=File_Open(methOutfileName.c_str(),"w");
 				methWigOutfileName=Prefix;methWigOutfileName+=".meth.wig";
-				METHWIGOUTFILE=File_Open(methWigOutfileName.c_str(),"w");
+				if(printwigfile) METHWIGOUTFILE=File_Open(methWigOutfileName.c_str(),"w");
 				binsOutfileName=Prefix;binsOutfileName+=".methBins.txt";
 				BINsOUTFILE=File_Open(binsOutfileName.c_str(),"w");
 				//---DMR
@@ -487,7 +496,7 @@ int main(int argc, char* argv[])
 			//
 			 if(Methratio){
 				fclose(METHOUTFILE);
-				fclose(METHWIGOUTFILE);
+				if(printwigfile) fclose(METHWIGOUTFILE);
 				fclose(BINsOUTFILE);
 				fclose(REGION_OUT_CG);
 				fclose(REGION_OUT_CHG);
@@ -521,6 +530,19 @@ int main(int argc, char* argv[])
             fprintf(OUTLOG,"[mC]\tM: %lu Mh: %lu H: %lu hU: %lu U: %lu\n",M,Mh,H_AllC,hU,U);
 			if(Methratio)
 			{
+                            FILE* fp_NCcoverage=File_Open(NCcoverage.c_str(),"w");
+                            fprintf(fp_NCcoverage,"NCcovergae");
+                            for(int i=0;i<15;i++)
+                            {
+                                    fprintf(fp_NCcoverage,"\t%lu",CoverC[i]);
+                            }
+                            fprintf(fp_NCcoverage,"\nPercent_of_covergae");
+                            for(int i=0;i<15;i++)
+                            {
+                                    fprintf(fp_NCcoverage,"\t%f",((double)CoverC[i])/(totalC+totalG));
+                            }
+                            fclose(fp_NCcoverage);
+
 				FILE* mC_DENSITY=File_Open(mCdensity.c_str(),"w");
 				fprintf(mC_DENSITY,"mCG");
 				for(int i=0;i<100;i++)
@@ -805,7 +827,10 @@ void print_meth_tofile(int genome_id, ARGS* args){
 				}
 				//-----F
 				std::string context;
-				if(args->Methy_List.plusMethylated[l]+args->Methy_List.plusUnMethylated[l]>=coverage)
+                                if(toupper(args->Genome_List[i].Genome[l]) == 'C'){
+                                    totalC++;
+                                }
+				if(args->Methy_List.plusMethylated[l]+args->Methy_List.plusUnMethylated[l]>=1) //coverage
 				{//chromsome loci strand context methratio eff_CT_count C_count T_count CT_count rev_G_count rev_GA_count
 					int C_count=args->Methy_List.plusMethylated[l];
 					int T_count=args->Methy_List.plusUnMethylated[l];
@@ -840,8 +865,11 @@ void print_meth_tofile(int genome_id, ARGS* args){
 					char charFor1='N',charFor2='N';//printf("\n%s\n",Fivecontext.c_str());
 					if(l+1< args->Genome_Offsets[i+1].Offset) charFor1=toupper(args->Genome_List[i].Genome[l+1]);
 					if(l+2< args->Genome_Offsets[i+1].Offset) charFor2=toupper(args->Genome_List[i].Genome[l+2]);
-					
-					
+					int Cover = C_count+T_count;
+                                        for(int nc=0; nc<15; nc++){
+                                            if(Cover>nc){ CoverC[nc]++; }
+                                        }
+
 					if(charFor1=='G') //(args.Methy_List[i].MethContext[l]==1)
 					{
 						context="CG";
@@ -883,6 +911,8 @@ void print_meth_tofile(int genome_id, ARGS* args){
 					}
 					else context="NA";
 					
+                                        if(Cover<coverage)
+                                         continue;
 					//methratio	
 					float PlusMethratio;
 					if(revGA>0) 
@@ -921,17 +951,19 @@ void print_meth_tofile(int genome_id, ARGS* args){
 					if(revGA>0) fprintf(METHOUTFILE,"%s\t%d\t+\t%s\t%d\t%d\t%f\t%0.001f\t%d\t%d\t%s\t%s\n",args->Genome_Offsets[i].Genome,l+1,context.c_str(),C_count,(C_count+T_count),PlusMethratio,float(C_count+T_count)*revGA,rev_G,(rev_A+rev_G),category.c_str(),Fivecontext.c_str());
 					else fprintf(METHOUTFILE,"%s\t%d\t+\t%s\t%d\t%d\t%f\tnull\t%d\t%d\t%s\t%s\n",args->Genome_Offsets[i].Genome,l+1,context.c_str(),C_count,(C_count+T_count),PlusMethratio,rev_G,(rev_A+rev_G),category.c_str(),Fivecontext.c_str());
 					//wig file
-					if(!printwigheader) {
+					if(!printwigheader && printwigfile) {
 						fprintf(METHWIGOUTFILE,"variableStep chrom=%s\n", Genome);
 						printwigheader=true;
 					}
-					fprintf(METHWIGOUTFILE,"%d\t%0.001f\n", l+1, PlusMethratio);
+					if(printwigfile) fprintf(METHWIGOUTFILE,"%d\t%0.001f\n", l+1, PlusMethratio);
 					if(!strcmp(context.c_str(),"CG")) fprintf(LOC_OUT_CG,"%s\t%d\t+\tCG\t%d\t%d\n",Genome,l+1,C_count,(C_count+T_count));
 					else if(!strcmp(context.c_str(),"CHG")) fprintf(LOC_OUT_CHG,"%s\t%d\t+\tCHG\t%d\t%d\n",Genome,l+1,C_count,(C_count+T_count));
 					else if(!strcmp(context.c_str(),"CHH")) fprintf(LOC_OUT_CHH,"%s\t%d\t+\tCHH\t%d\t%d\n",Genome,l+1,C_count,(C_count+T_count));
 					
 				}
-				if(args->Methy_List.NegMethylated[l]+args->Methy_List.NegUnMethylated[l]>=coverage)
+
+                                if(toupper(args->Genome_List[i].Genome[l]) == 'G'){totalG++;}
+				if(args->Methy_List.NegMethylated[l]+args->Methy_List.NegUnMethylated[l]>=1) //coverage
 				{
 					int C_count=args->Methy_List.NegMethylated[l];
 					int T_count=args->Methy_List.NegUnMethylated[l];
@@ -964,6 +996,11 @@ void print_meth_tofile(int genome_id, ARGS* args){
 					if(stringlength<5) printf("\n%d %d %d %s \n",strlen(Fivecontext.c_str()), l, args->Genome_Offsets[i+1].Offset, args->Genome_Offsets[i].Genome);
 					ReverseC_Context(Fcontext,Fivecontext.c_str(),stringlength);
 					
+                                        int Cover = C_count+T_count;
+                                        for(int nc=0; nc<15; nc++){
+                                            if(Cover>nc){ CoverC[nc]++; }
+                                        }
+
 					char charBac1='N',charBac2='N';
 					if(l>=1) charBac1=toupper(args->Genome_List[i].Genome[l-1]);
 					if(l>=2) charBac2=toupper(args->Genome_List[i].Genome[l-2]);
@@ -1007,6 +1044,8 @@ void print_meth_tofile(int genome_id, ARGS* args){
 		                        NegcountCHH+=(C_count+T_count);
 					}
 					else context="NA";
+
+                                        if(Cover<coverage) continue;
 					//methratio	
 					float NegMethratio;
 					if(revGA>0)
@@ -1045,11 +1084,11 @@ void print_meth_tofile(int genome_id, ARGS* args){
 					else fprintf(METHOUTFILE,"%s\t%d\t-\t%s\t%d\t%d\t%f\tnull\t%d\t%d\t%s\t%s\n",args->Genome_Offsets[i].Genome,l+1,context.c_str(),C_count,(C_count+T_count),NegMethratio,rev_G,(rev_G+rev_A),category.c_str(),Fcontext);
 
 					//wig
-					if(!printwigheader) {
+					if(!printwigheader && printwigfile) {
                                                         fprintf(METHWIGOUTFILE,"variableStep chrom=%s\n", Genome);
                                                         printwigheader=true;
                                                 }
-                                                fprintf(METHWIGOUTFILE,"%d\t-%0.001f\n", l+1, NegMethratio);
+                                        if(printwigfile) fprintf(METHWIGOUTFILE,"%d\t-%0.001f\n", l+1, NegMethratio);
 
 					if(!strcmp(context.c_str(),"CG")) fprintf(LOC_OUT_CG,"%s\t%d\t-\tCG\t%d\t%d\n",Genome,l+1,C_count,(C_count+T_count));
 					else if(!strcmp(context.c_str(),"CHG")) fprintf(LOC_OUT_CHG,"%s\t%d\t-\tCHG\t%d\t%d\n",Genome,l+1,C_count,(C_count+T_count));

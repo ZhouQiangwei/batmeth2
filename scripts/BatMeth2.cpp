@@ -725,7 +725,7 @@ void alignmentSingle(string outputdir, string input_prefix, string input_prefix1
 	    }
 	    if(aligner=="BatMeth2"){
                 if(outformat == "BAM")
-	    	    cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + clenfiles + " | samtools sort -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
+	    	    cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + clenfiles + " | samtools sort -m 1.5G -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
                 else
                     cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + clenfiles + " -o " + outputdir + output_prefix + ".sam";
 	    	cmd = cmd + " >> " + outputdir + output_prefix + ".run.log 2>&1";
@@ -765,7 +765,7 @@ void alignmentSingle(string outputdir, string input_prefix, string input_prefix1
 		}
 	    if(aligner=="BatMeth2"){
                 if(outformat == "BAM")
-	    	    cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + input_prefix + " | samtools sort -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
+	    	    cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + input_prefix + " | samtools sort -m 1.5G -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
                 else
                     cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + input_prefix + " -o " + outputdir + output_prefix + ".sam";
 	    	cmd = cmd + " >> " + outputdir + output_prefix + ".run.log 2>&1";
@@ -879,7 +879,7 @@ void alignmentPaired(string outputdir, string input_prefix, string input_prefix1
 		}
 		if(aligner=="BatMeth2"){
                     if(outformat=="BAM")
-		        cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + clenfiles1 + " -i " + clenfiles2 + " | samtools sort -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
+		        cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + clenfiles1 + " -i " + clenfiles2 + " | samtools sort -m 1.5G -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
                     else
                         cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + clenfiles1 + " -i " + clenfiles2 + " -o " + outputdir + output_prefix + ".sam";
 	    	cmd = cmd + " >> " + outputdir + output_prefix + ".run.log 2>&1";
@@ -919,7 +919,7 @@ void alignmentPaired(string outputdir, string input_prefix, string input_prefix1
 		}
 		if(aligner=="BatMeth2"){
                     if(outformat=="BAM")
-			cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + input_prefix1 + " -i " + input_prefix2 + " | samtools sort -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
+			cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + input_prefix1 + " -i " + input_prefix2 + " | samtools sort -m 1.5G -@ " + getstring(threads) + " -O BAM -o " + outputdir + output_prefix + ".sort.bam -";
                     else
                         cmd = abspath + "batmeth2-align" + " -g " + genome_index + " -p " + getstring(threads) + " -i " + input_prefix1 + " -i " + input_prefix2 + " -o " + outputdir + output_prefix + ".sam";
 	    	cmd = cmd + " >> " + outputdir + output_prefix + ".run.log 2>&1";
@@ -1105,7 +1105,7 @@ void alignmentstate(string outputdir, string output_prefix, string mkpath){
     fprintf(Falignresults, "Value\tState\n");
     fclose(Falignresults);
     if(aligner != "BatMeth2" || outformat=="SAM"){
-        string alignsortbam = "samtools sort -@ " + getstring(threads) +" -o " + outputdir + output_prefix + ".sort.bam " + outputdir + output_prefix + ".sam";
+        string alignsortbam = "samtools sort -m 1.5G -@ " + getstring(threads) +" -o " + outputdir + output_prefix + ".sort.bam " + outputdir + output_prefix + ".sam";
         alignsortbam = alignsortbam + " >> " + outputdir + output_prefix + ".run.log 2>&1";
         executeCMD(alignsortbam.c_str(), outputdir, output_prefix);
     }

@@ -51,7 +51,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
 	install-html-recursive install-info-recursive \
-	install-pdf-recursive install-ps-recursive install-recursive \
+	install-pdf-recursive install-ps-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
@@ -98,15 +98,15 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /public/home/ppguan/soft/BatMeth2/missing --run aclocal-1.11
-AMTAR = ${SHELL} /public/home/ppguan/soft/BatMeth2/missing --run tar
-AUTOCONF = ${SHELL} /public/home/ppguan/soft/BatMeth2/missing --run autoconf
-AUTOHEADER = ${SHELL} /public/home/ppguan/soft/BatMeth2/missing --run autoheader
-AUTOMAKE = ${SHELL} /public/home/ppguan/soft/BatMeth2/missing --run automake-1.11
+ACLOCAL = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/missing --run aclocal-1.11
+AMTAR = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/missing --run tar
+AUTOCONF = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/missing --run autoconf
+AUTOHEADER = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/missing --run autoheader
+AUTOMAKE = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -I/public/home/qwzhou/software/packagesR/include
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
@@ -118,20 +118,20 @@ DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-GREP = /usr/bin/grep
+GREP = /bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -L/public/home/qwzhou/software/packagesR/lib
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /public/home/ppguan/soft/BatMeth2/missing --run makeinfo
-MKDIR_P = /usr/bin/mkdir -p
+MAKEINFO = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/missing --run makeinfo
+MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = BatMeth
 PACKAGE_BUGREPORT = qiangwei.zhou2013@gmail.com
@@ -144,10 +144,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 2.00_mmx
-abs_builddir = /public/home/ppguan/soft/BatMeth2
-abs_srcdir = /public/home/ppguan/soft/BatMeth2
-abs_top_builddir = /public/home/ppguan/soft/BatMeth2
-abs_top_srcdir = /public/home/ppguan/soft/BatMeth2
+abs_builddir = /public/home/qwzhou/software_devp/batmeth2-qwgit
+abs_srcdir = /public/home/qwzhou/software_devp/batmeth2-qwgit
+abs_top_builddir = /public/home/qwzhou/software_devp/batmeth2-qwgit
+abs_top_srcdir = /public/home/qwzhou/software_devp/batmeth2-qwgit
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -167,13 +167,13 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /public/home/ppguan/soft/BatMeth2/install-sh
+install_sh = ${SHELL} /public/home/qwzhou/software_devp/batmeth2-qwgit/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
-mkdir_p = /usr/bin/mkdir -p
+mkdir_p = /bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
 prefix = /usr/local
@@ -560,7 +560,8 @@ check: check-recursive
 all-am: Makefile config.h
 installdirs: installdirs-recursive
 installdirs-am:
-install: install-recursive
+install: myinstall
+#install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -673,13 +674,62 @@ uninstall-am:
 	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am
 
 script:
-	g++ ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz
-	g++ ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread
+	g++ ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz 
+	g++ ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread 
 	g++ ./scripts/report2html.cpp -o ./scripts/report2html 
-copy:
-	g++ ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz
-	g++ ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread
+myinstall:
+	g++ ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz 
+	g++ ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread 
 	if [ -d "bin" ]; then echo bin exists; else mkdir bin; fi
+	cp scripts/batmeth2_to_bigwig.py bin
+	cp scripts/bedGraphToBigWig bin
+	cp scripts/bedSort bin
+	g++ -o ./scripts/BatMeth2 ./scripts/BatMeth2.cpp -lpthread
+	g++ ./scripts/report2html.cpp -o ./scripts/report2html
+	cp ./scripts/BatMeth2 ./bin/batmeth2
+	cp scripts/strip.pl bin 
+	cp scripts/report2html bin
+	cp scripts/b2c.pl bin 
+	cp scripts/build_complement bin 
+	cp scripts/filter.pl bin
+	cp scripts/build_indexX bin 
+	cp scripts/build_all bin
+	cp scripts/ann2loc.pl bin 
+	cp scripts/build_location.pl bin 
+	cp scripts/build_revcmp bin 
+	cp scripts/complement.pl bin
+	cp scripts/ReverseComplteFQ bin
+	cp src/bwtformatdb bin 
+	cp src/reverse bin 
+	cp src/penguin bin 
+	cp src/penguin-a bin
+	cp src/calmeth bin
+	cp src/batmethindex bin
+	cp src/filter bin
+	cp bwtformatdb.ini bin
+	cp src/splitSam bin
+	cp src/methyGff bin
+	cp src/methyPlot bin
+	cp src/*.r bin
+	cp scripts/*.r bin
+	cp src/DMCannotation* bin
+	cp scripts/GeneMethHeatmap ./bin/
+	cp scripts/chrLenExtract ./bin
+	cp scripts/combined.element* bin
+	cp scripts/batmeth2-align bin
+	cp scripts/BatMeth2 bin
+	cp scripts/build_ann_location.pl bin
+	cp scripts/preGenome bin
+	cp src/batDMR/batDMR ./bin
+	cp src/genome_filter bin
+	cp src/build_index_rrbs bin
+copy:
+	g++ ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz 
+	g++ ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread 
+	if [ -d "bin" ]; then echo bin exists; else mkdir bin; fi
+	cp scripts/batmeth2_to_bigwig.py bin
+	cp scripts/bedGraphToBigWig bin
+	cp scripts/bedSort bin
 	g++ -o ./scripts/BatMeth2 ./scripts/BatMeth2.cpp -lpthread
 	g++ ./scripts/report2html.cpp -o ./scripts/report2html
 	cp ./scripts/BatMeth2 ./bin/batmeth2

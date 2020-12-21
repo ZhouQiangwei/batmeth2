@@ -10,7 +10,7 @@
 //#include <ctime>
 #include <time.h>
 
-#define BATBUF 2000
+#define BATBUF 30000
 #define BT2_VER "2.1"
 
 using namespace std;
@@ -51,18 +51,18 @@ int main(int argc, char* argv[]){
 		}
     }
     htmlFile = prefix + "." + htmlFile;
-    enrichfile = prefix + ".AverMethylevel.1.txt";
-    distri_mrfile = prefix + ".Methylevel.1.txt";
-    heatmap_cg_file = prefix + ".1.txt.sorted.cg";
-    heatmap_chg_file = prefix + ".1.txt.sorted.chg";
-    heatmap_chh_file = prefix + ".1.txt.sorted.chh";
+    enrichfile = prefix + ".Methylevel.txt";
+    distri_mrfile = prefix + ".AverMethylevel.txt";
+    heatmap_cg_file = prefix + ".txt.sorted.cg";
+    heatmap_chg_file = prefix + ".txt.sorted.chg";
+    heatmap_chh_file = prefix + ".txt.sorted.chh";
     mrfile = prefix + ".mCcatero.txt";
     coverage_mrfile = prefix + ".NCcoverage.txt";
     chrom_mrfile = prefix + ".methBins.txt";
     string parafile = prefix + ".Paramater.txt";
     string parafile2 = prefix + ".Paramater2.txt";
     //awk -v FS="\t" -v OFS="\t" '{gsub(/ /,"_",$2);print $2,$1}' alignresults.txt > alignresults2.txt
-    string alignfile = prefix + ".alignresults.txt";
+    string alignfile = prefix + ".align.log.txt";
     string mrbasicfile = prefix + ".methbasic.txt";
 
     ofstream ofs;
@@ -150,7 +150,7 @@ int main(int argc, char* argv[]){
         strcpy(opt1, subarr);
         subarr = strtok(NULL,"\t");
         strcpy(opt2, subarr);
-        outputRow(ofs, opt2, opt1);
+        outputRow(ofs, opt1, opt2);
     }
 
     ofs << "</table>\n";

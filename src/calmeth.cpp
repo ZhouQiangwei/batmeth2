@@ -126,7 +126,7 @@ unsigned ALL_Map_Remdup=0;
 float UPPER_MAX_MISMATCH=0.06;
 bool REMOVE_DUP=false; //true; //true to removeDup, false will not remove PCR-dup
 unsigned Mismatch_Qual[255][255][255]; //[readLength][255][255]
-int QualCut=10;
+int QualCut=20;
 const int POWLIMIT=300;
 float POW10[POWLIMIT];
 int QUALITYCONVERSIONFACTOR=33;
@@ -163,9 +163,9 @@ FILE* REGION_OUT_CHH;
 FILE* LOC_OUT_CG;
 FILE* LOC_OUT_CHG;
 FILE* LOC_OUT_CHH;
-int coverage=5;
+int coverage=4;
 int binspan=50000;
-int nCs=5;
+int nCs=1;
 bool printwigfile = false;
 //C coverage
 unsigned long totalC = 0;
@@ -191,9 +191,9 @@ int main(int argc, char* argv[])
 		//"\t-p|--threads          the number of threads.\n"
 		"\t-n|--Nmismatch [float]  Number of mismatches, default 0.06 percentage of read length. [0-1]\n"
 		"\t-m|--methratio        [MethFileNamePrefix]  Predix of methratio output file\n"
-		"\t-Q [int]              caculate the methratio while read QulityScore >= Q. default:10\n"
-		"\t-c|--coverage         >= <INT> coverage. default:5\n"
-		"\t-nC		         >= <INT> nCs per region. default:5\n"
+		"\t-Q [int]              caculate the methratio while read QulityScore >= Q. default:20\n"
+		"\t-c|--coverage         >= <INT> coverage. default:4\n"
+		"\t-nC		             >= <INT> nCs per region. default:1\n"
 		"\t-R |--Regions         Bins for DMR caculate , default 1kb .\n"
 		"\t--binsfile            DNA methylation level distributions in chrosome, default output file: {methratioPrefix}.methBins.txt\n"
 		"\t-s|--step             Chrosome using an overlapping sliding window of 100000bp at a step of 50000bp. default step: 50000(bp)\n"
@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
 		else if(!strcmp(argv[i],"-c") || !strcmp(argv[i],"--coverage"))
 		{
 			coverage=atoi(argv[++i]);
-                }else if(!strcmp(argv[i],"-nC"))
+        }else if(!strcmp(argv[i],"-nC"))
 		{
 			nCs=atoi(argv[++i]);
 		}
@@ -363,7 +363,8 @@ int main(int argc, char* argv[])
 				fgets(args.Genome_Offsets[Genome_Count].Genome,39,Location_File);
 				for(int i=0;i<40;i++) 
 				{
-					if (args.Genome_Offsets[Genome_Count].Genome[i] == '\n' ||args.Genome_Offsets[Genome_Count].Genome[i] == '\r')
+					//if (args.Genome_Offsets[Genome_Count].Genome[i] == '\n' ||args.Genome_Offsets[Genome_Count].Genome[i] == '\r')
+					if (args.Genome_Offsets[Genome_Count].Genome[i] == '\n' || args.Genome_Offsets[Genome_Count].Genome[i] == '\r' || args.Genome_Offsets[Genome_Count].Genome[i] == ' ' || args.Genome_Offsets[Genome_Count].Genome[i] == '\t') //genome name rm ' '
 					{ 
 						args.Genome_Offsets[Genome_Count].Genome[i]=0;
 						break;
@@ -462,7 +463,7 @@ int main(int argc, char* argv[])
 						while (fgets(s2t,BATBUF,args.samINFILE)!=0 ){
 				                	if(s2t[0]=='@') 
 				                	{    
-			                            	s2t[BATBUF]='\0';s2t[BATBUF-1]='\n';
+			                            	//s2t[BATBUF]='\0';s2t[BATBUF-1]='\n'; //这个会报错没搞清
                         			    	if(Sam){
                         			    	    fprintf(args.OUTFILE,"%s",s2t);
                         				    }    
@@ -1291,7 +1292,7 @@ void *Process_read(void *arg)
 	string hits[MAX_HITS_ALLOWED];
 	char Comp_String[MAXTAG];for (int i=1;i<MAXTAG;Comp_String[i++]=0);
 	//start to read batman hit file
-	char *s2t = (char*) malloc(600);
+	char *s2t = (char*) malloc(1000);
 	char read_Methyl_Info[600];char rawReadBeforeBS[600];char temp[5];
 	char Dummy[BATBUF],forReadString[BATBUF],Chrom[CHROMSIZE];
 	char Chrom_P[CHROMSIZE];int pos_P=0;int Insert_Size=0;int Qsingle=0; //Paired-end reads

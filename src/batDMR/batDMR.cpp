@@ -139,7 +139,7 @@ void chromLengthExact(string & refSeqFile)
 void Print_dm_result(const vector<PvalLocus> &pval_loci, ostream &output_encoding, double cutoff, double Pcutoff, double methdiff, string dmr_outfile, 
     bool singleAuto, int mindmc, int mindmcdis, int maxdmrlen) {
   string record, chrom, context, sign;string name;
-  size_t position, coverage_factor, meth_factor, coverage_rest, meth_rest;
+  int position, coverage_factor, meth_factor, coverage_rest, meth_rest; //size_t
   double pval;double adjust_pvalue;
   ofstream OutFiledmr;
   if(singleAuto) OutFiledmr.open(dmr_outfile.c_str());
@@ -216,7 +216,7 @@ void Print_dm_result(const vector<PvalLocus> &pval_loci, ostream &output_encodin
             }
             else if(position - prevdmc <= mindmcdis) {
 //fprintf(stderr, "\nTTT %d %d %d", dmrtotalLen, dmrtotalLen + position - prevdmc, maxdmrlen);
-               if(dmrtotalLen + position - prevdmc <= maxdmrlen){
+               if(dmrtotalLen + position - prevdmc <= maxdmrlen){ //未超出最大长度
                    Ndmc ++ ;
                    if(signed_methdiff > 0) hyperNdmc++;
                    else hypoNdmc++;
@@ -225,7 +225,7 @@ void Print_dm_result(const vector<PvalLocus> &pval_loci, ostream &output_encodin
                    prevdmc = position;
                    dmrC1 += meth_factor; dmrCover1 += coverage_factor;
                    dmrC2 += meth_rest; dmrCover2 += coverage_rest;
-               }else{
+               }else{ //超出了最大长度
                    if(Ndmc >= mindmc){
                        OutFiledmr << prevchrom << "\t" << dmrstart << "\t" << dmrend << "\t"
                         << (double)dmrC1/dmrCover1 << "\t" << (double)dmrC2/dmrCover2 << "\t" << Ndmc
@@ -240,6 +240,7 @@ void Print_dm_result(const vector<PvalLocus> &pval_loci, ostream &output_encodin
                         hypoNdmc=1;
                         hyperNdmc=0;
                    }
+                  dmrC1 = 0; dmrCover1 = 0; dmrC2 = 0; dmrCover2 = 0;
                    dmrstart = position;
                    dmrC1 += meth_factor; dmrCover1 += coverage_factor;
                    dmrC2 += meth_rest; dmrCover2 += coverage_rest;
@@ -259,6 +260,7 @@ void Print_dm_result(const vector<PvalLocus> &pval_loci, ostream &output_encodin
                      hypoNdmc=1;
                      hyperNdmc=0;
                 }
+                dmrC1 = 0; dmrCover1 = 0; dmrC2 = 0; dmrCover2 = 0;
                 dmrstart = position;
                 dmrC1 += meth_factor; dmrCover1 += coverage_factor;
                 dmrC2 += meth_rest; dmrCover2 += coverage_rest;
@@ -271,6 +273,7 @@ void Print_dm_result(const vector<PvalLocus> &pval_loci, ostream &output_encodin
      OutFiledmr << prevchrom << "\t" << dmrstart << "\t" << dmrend << "\t"
      << (double)dmrC1/dmrCover1 << "\t" << (double)dmrC2/dmrCover2 << "\t" << Ndmc
      << "\t" << hyperNdmc << "," << hypoNdmc << "\n";
+     dmrC1 = 0; dmrCover1 = 0; dmrC2 = 0; dmrCover2 = 0;
   }
   return;
 };

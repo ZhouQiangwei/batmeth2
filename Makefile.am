@@ -1,98 +1,49 @@
-AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src scripts src/batDMR
-script:
-	g++ $(CXXFLAGS) ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz 
-	g++ $(CXXFLAGS) ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread 
-	g++ $(CXXFLAGS) ./scripts/report2html.cpp -o ./scripts/report2html 
-myinstall:
-	g++ $(CXXFLAGS) ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz 
-	g++ $(CXXFLAGS) ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread 
-	if [ -d "bin" ]; then echo bin exists; else mkdir bin; fi
-	cp scripts/batmeth2_to_bigwig.py bin
-	cp scripts/bedGraphToBigWig bin
-	cp scripts/bedSort bin
-	g++ -o ./scripts/BatMeth2 ./scripts/BatMeth2.cpp -lpthread
-	g++ ./scripts/report2html.cpp -o ./scripts/report2html
-	cp ./scripts/BatMeth2 ./bin/batmeth2
-	cp scripts/strip.pl bin 
-	cp scripts/report2html bin
-	cp scripts/b2c.pl bin 
-	cp scripts/build_complement bin 
-	cp scripts/filter.pl bin
-	cp scripts/build_indexX bin 
-	cp scripts/build_all bin
-	cp scripts/ann2loc.pl bin 
-	cp scripts/build_location.pl bin 
-	cp scripts/build_revcmp bin 
-	cp scripts/complement.pl bin
-	cp scripts/ReverseComplteFQ bin
-	cp src/bwtformatdb bin 
-	cp src/reverse bin 
-	cp src/penguin bin 
-	cp src/penguin-a bin
-	cp src/calmeth bin
-	cp src/batmethindex bin
-	cp src/filter bin
-	cp bwtformatdb.ini bin
-	cp src/splitSam bin
-	cp src/methyGff bin
-	cp src/methyPlot bin
-	cp src/*.r bin
-	cp scripts/*.r bin
-	cp src/DMCannotation* bin
-	cp scripts/GeneMethHeatmap ./bin/
-	cp scripts/chrLenExtract ./bin
-	cp scripts/combined.element* bin
-	cp scripts/batmeth2-align bin
-	cp scripts/BatMeth2 bin
-	cp scripts/build_ann_location.pl bin
-	cp scripts/preGenome bin
-	cp src/batDMR/batDMR ./bin
-	cp src/genome_filter bin
-	cp src/build_index_rrbs bin
-copy:
-	g++ ./src/calmeth.cpp -o ./src/calmeth -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz 
-	g++ ./src/splitSam.cpp -o ./src/splitSam -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -pthread 
-	if [ -d "bin" ]; then echo bin exists; else mkdir bin; fi
-	g++ -o ./scripts/BatMeth2 ./scripts/BatMeth2.cpp -lpthread
-	g++ ./scripts/report2html.cpp -o ./scripts/report2html
-	cp ./scripts/BatMeth2 ./bin/batmeth2
-	cp scripts/batmeth2_to_bigwig.py bin
-	cp scripts/bedGraphToBigWig bin
-	cp scripts/bedSort bin
-	cp scripts/strip.pl bin 
-	cp scripts/report2html bin
-	cp scripts/b2c.pl bin 
-	cp scripts/build_complement bin 
-	cp scripts/filter.pl bin
-	cp scripts/build_indexX bin 
-	cp scripts/build_all bin
-	cp scripts/ann2loc.pl bin 
-	cp scripts/build_location.pl bin 
-	cp scripts/build_revcmp bin 
-	cp scripts/complement.pl bin
-	cp scripts/ReverseComplteFQ bin
-	cp src/bwtformatdb bin 
-	cp src/reverse bin 
-	cp src/penguin bin 
-	cp src/penguin-a bin
-	cp src/calmeth bin
-	cp src/batmethindex bin
-	cp src/filter bin
-	cp bwtformatdb.ini bin
-	cp src/splitSam bin
-	cp src/methyGff bin
-	cp src/methyPlot bin
-	cp src/*.r bin
-	cp scripts/*.r bin
-	cp src/DMCannotation* bin
-	cp scripts/GeneMethHeatmap ./bin/
-	cp scripts/chrLenExtract ./bin
-	cp scripts/combined.element* bin
-	cp scripts/batmeth2-align bin
-	cp scripts/BatMeth2 bin
-	cp scripts/build_ann_location.pl bin
-	cp scripts/preGenome bin
-	cp src/batDMR/batDMR ./bin
-	cp src/genome_filter bin
-	cp src/build_index_rrbs bin
+EXTRA_DIST =  batmeth2
+AM_CFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lz -lm -pthread 
+AM_CXXFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lz -lm -pthread 
+RANLIB=ranlib
+#AM_CPPFLAGS = -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm
+
+noinst_LIBRARIES = libz.a
+libz_a_SOURCES = adler32.c compress.c crc32.c gzio.c uncompr.c deflate.c trees.c \
+       zutil.c inflate.c infback.c inftrees.c inffast.c\
+       zlib.h zconf.h crc32.h  deflate.h zutil.h inftrees.h inflate.h inffast.h trees.h inffixed.h
+
+bin_PROGRAMS = batmethindex penguin penguin-a bwtformatdb reverse filter methyGff build_index_rrbs
+batmethindex_SOURCES= bfix.cpp index.cpp BWT.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+ iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c\
+ BWT.h TypeNLimit.h MemManager.h TextConverter.h HSP.h MiscUtilities.h DNACount.h r250.h HSPstatistic.h\
+ BWTConstruct.h QSufSort.h r250.h dictionary.h inistrlib.h iniparser.h Timing.h Socket.h karlin.h\
+ bfix.h 
+penguin_SOURCES = print.cpp filters.cpp utils.cpp batlib.cpp rqindex.cpp penguin.cpp map.cpp ssw.h command.h global.h swroutines.h kseq.h\
+ bfix.cpp BWT.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c ssw.c command.cpp swroutines.cpp\
+ iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c fastsw.cpp\
+ print.h filters.h BWT.h TypeNLimit.h MemManager.h TextConverter.h HSP.h MiscUtilities.h DNACount.h r250.h HSPstatistic.h\
+ BWTConstruct.h QSufSort.h r250.h dictionary.h inistrlib.h iniparser.h Timing.h Socket.h karlin.h\
+ bfix.h rqindex.h utils.h batlib.h common.h map.h fastsw.h
+penguin_a_SOURCES = print.cpp filters.cpp utils.cpp batlib.cpp rqindex.cpp penguin-a.cpp map.cpp ssw.h command.h global.h swroutines.h kseq.h\
+ bfix.cpp BWT.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c ssw.c command.cpp swroutines.cpp\
+ iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c fastsw.cpp\
+ print.h filters.h BWT.h TypeNLimit.h MemManager.h TextConverter.h HSP.h MiscUtilities.h DNACount.h r250.h HSPstatistic.h\
+ BWTConstruct.h QSufSort.h r250.h dictionary.h inistrlib.h iniparser.h Timing.h Socket.h karlin.h\
+ bfix.h rqindex.h utils.h batlib.h common.h map.h fastsw.h
+bwtformatdb_SOURCES= bwtformatdb.c BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+ iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c\
+ BWT.h TypeNLimit.h MemManager.h TextConverter.h HSP.h MiscUtilities.h DNACount.h r250.h HSPstatistic.h\
+ BWTConstruct.h QSufSort.h r250.h dictionary.h inistrlib.h iniparser.h Timing.h Socket.h karlin.h
+reverse_SOURCES = reverse.cpp 
+filter_SOURCES = filter.cpp 
+methyGff_SOURCES = methyGff.cpp
+build_index_rrbs_SOURCES = build_index_rrbs.cpp
+#batman_SOURCES= batman.cpp BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+# iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c 
+#batman_LDADD = libz.a
+#decode_SOURCES= decode.cpp BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+# iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c
+#decode_LDADD = libz.a
+#reverse_SOURCES = reverse.cpp 
+#copy:
+#	cp bwtformatdb ../bin
+#	cp reverse ../bin
+#	cp batman ../bin
+#	cp decode ../bin
